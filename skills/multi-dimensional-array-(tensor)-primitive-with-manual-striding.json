@@ -1,0 +1,17 @@
+{
+  "Name": "Multi-dimensional Array (Tensor) Primitive with Manual Striding",
+  "Type": "code",
+  "Source": "tensor.h, tensor.cpp, main.cpp, README.md, PROJECT.md",
+  "Tags": [
+    "data-structure",
+    "numerical-computing",
+    "memory-management",
+    "c++",
+    "high-performance"
+  ],
+  "Dependencies": null,
+  "Summary": "This skill covers the design and implementation of a fundamental multi-dimensional array (tensor) data structure using raw memory pointers and manual stride calculation. It demonstrates how to manage memory views for N-dimensional data stored in a flat buffer, specifically focusing on row-major layout, to enable efficient element access without relying on external numerical libraries. This is foundational for building custom computation kernels or minimal inference engines.",
+  "Pattern": "```cpp\n// tensor.h\nstruct Tensor {\n  float* data; // Raw pointer to flat memory buffer\n  std::vector\u003cint\u003e shape; // Dimensions of the tensor\n  std::vector\u003cint\u003e strides; // Pre-calculated multipliers for each dimension\n\n  // Constructor: Initializes a tensor view from a raw buffer and shape.\n  // Calculates row-major strides automatically.\n  Tensor(float* data, std::vector\u003cint\u003e shape);\n\n  // Accesses an element at given N-dimensional indices.\n  float at(std::vector\u003cint\u003e indices);\n};\n\n// tensor.cpp\nTensor::Tensor(float* new_data, std::vector\u003cint\u003e new_shape)\n    : data(new_data), shape(new_shape) {\n  strides.resize(shape.size());\n  if (!shape.empty()) {\n    strides.back() = 1; // Last dimension is contiguous\n    for (int i = shape.size() - 2; i \u003e= 0; --i) {\n      strides[i] = strides[i+1] * shape[i+1];\n    }\n  }\n}\n\nfloat Tensor::at(std::vector\u003cint\u003e indices) {\n  int offset = 0;\n  for (int i = 0; i \u003c indices.size(); ++i) {\n    offset += indices[i] * strides[i];\n  }\n  return data[offset];\n}\n```",
+  "Usage": "To apply this skill, one would implement a `Tensor` (or similar) class using a raw pointer for data. The core involves correctly calculating `strides` during construction for a chosen memory layout (e.g., row-major). The `at()` method efficiently translates multi-dimensional indices into a single flat buffer offset using these pre-computed strides. This primitive can then be extended with fundamental operations like element-wise addition, matrix multiplication, etc., by defining how they interact with the underlying memory buffer based on the tensor's shape and strides. This approach is valuable for performance-critical applications or when deep control over memory layout is required.",
+  "author": "anonymous"
+}
