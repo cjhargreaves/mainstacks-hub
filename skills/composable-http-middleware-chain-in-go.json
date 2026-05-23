@@ -1,0 +1,17 @@
+{
+  "Name": "Composable HTTP Middleware Chain in Go",
+  "Type": "code",
+  "Source": "middleware/middleware.go, main.go",
+  "Tags": [
+    "http",
+    "middleware",
+    "go",
+    "chaining",
+    "design-pattern"
+  ],
+  "Dependencies": null,
+  "Summary": "This skill demonstrates how to implement a flexible and reusable middleware pattern for Go HTTP servers. It allows developers to compose multiple functionalities (like logging, error recovery, CORS, or rate limiting) into a processing chain around their main handlers, promoting modularity and separation of concerns.",
+  "Pattern": "```go\ntype Middleware func(http.Handler) http.Handler\n\nfunc Chain(middlewares ...Middleware) Middleware {\n    return func(next http.Handler) http.Handler {\n        for i := len(middlewares) - 1; i \u003e= 0; i-- {\n            next = middlewares[i](next)\n        }\n        return next\n    }\n}\n\nfunc Logger(next http.Handler) http.Handler {\n    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n        start := time.Now()\n        next.ServeHTTP(w, r)\n        log.Printf(\"%s %s %s\", r.Method, r.URL.Path, time.Since(start))\n    })\n}\n\n// Usage in main.go\nfunc main() {\n    mux := http.NewServeMux()\n    // ... route definitions ...\n\n    stack := Chain(\n        Logger,\n        Recovery,\n        CORS(\"*\"),\n        RateLimit(100),\n    )\n    http.ListenAndServe(\":8080\", stack(mux))\n}\n```",
+  "Usage": "Define a `Middleware` type as `func(http.Handler) http.Handler`. Create a `Chain` function to compose multiple middlewares into a single `Middleware` func. Implement individual middleware functions that wrap the `next` handler. Apply the chained middleware to your main HTTP handler (e.g., `http.ServeMux`) before listening for requests.",
+  "author": "anonymous"
+}
