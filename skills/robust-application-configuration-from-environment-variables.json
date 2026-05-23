@@ -1,0 +1,16 @@
+{
+  "Name": "Robust Application Configuration from Environment Variables",
+  "Type": "code",
+  "Source": "pkg/config/config.go",
+  "Tags": [
+    "configuration",
+    "environment variables",
+    "defaults",
+    "go"
+  ],
+  "Dependencies": null,
+  "Summary": "This skill demonstrates how to load application configuration settings from environment variables, providing sensible default values and handling type conversions (e.g., string to int) with appropriate error handling. It allows applications to be configured externally without recompilation, enhancing deployability across different environments.",
+  "Pattern": "type Config struct {\n    Port     int\n    DBHost   string\n    DBPort   int\n    LogLevel string\n}\n\nfunc Load() (*Config, error) {\n    cfg := \u0026Config{\n        Port:     8080,\n        DBHost:   \"localhost\",\n        DBPort:   5432,\n        LogLevel: \"info\",\n    }\n    // ... logic to read and parse environment variables into cfg fields ...\n    return cfg, nil\n}\n\nfunc MustLoad() *Config {\n    // ... calls Load() and panics on error ...\n}\n",
+  "Usage": "Define a struct for your application's configuration. Implement a `Load()` function that initializes the struct with default values and then overrides them with values from environment variables (e.g., `os.Getenv`). Include error handling for type conversions. Provide a `MustLoad()` convenience function for scenarios where immediate failure on config error is desired.",
+  "author": "anonymous"
+}
