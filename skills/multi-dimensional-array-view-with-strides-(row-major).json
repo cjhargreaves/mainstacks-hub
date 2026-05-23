@@ -1,0 +1,16 @@
+{
+  "Name": "Multi-dimensional Array View with Strides (Row-Major)",
+  "Type": "code",
+  "Source": "tensor.h, tensor.cpp, README.md",
+  "Tags": [
+    "numerical-computing",
+    "data-structure",
+    "memory-management",
+    "c++"
+  ],
+  "Dependencies": null,
+  "Summary": "Implements a lightweight, non-owning view over a flat memory buffer, allowing it to be accessed as a multi-dimensional array using row-major indexing and dynamically computed strides. This pattern is fundamental for building custom numerical libraries, interacting with external data formats, or managing memory efficiently in compute-intensive applications.",
+  "Pattern": "```cpp\n// tensor.h\nstruct Tensor {\n  float* data; // Raw pointer, does not own memory\n  std::vector\u003cint\u003e shape;\n  std::vector\u003cint\u003e strides;\n\n  Tensor(float* data, std::vector\u003cint\u003e shape);\n  float at(std::vector\u003cint\u003e indices);\n};\n\n// tensor.cpp\nTensor::Tensor(float* new_data, std::vector\u003cint\u003e new_shape) : data(new_data), shape(new_shape) {\n  strides.push_back(1);\n  for (int i = shape.size() - 1; i \u003e 0; i--) {\n    strides.push_back(strides.back() * shape[i]);\n  }\n  std::reverse(strides.begin(), strides.end());\n}\n\nfloat Tensor::at(std::vector\u003cint\u003e indices) {\n  int offset = 0;\n  for (int i = 0; i \u003c indices.size(); i++) {\n    offset += indices[i] * strides[i];\n  }\n  return data[offset];\n}\n```\n\n**Stride Calculation Logic (Row-Major):**\n1.  Initialize the stride for the last dimension to 1 (it's contiguous).\n2.  Iterate backward through the dimensions (from `n-1` down to `1`).\n3.  For each dimension `i`, its stride is `stride[i+1] * shape[i+1]` (i.e., the stride of the next dimension multiplied by the size of the next dimension).\n4.  Reverse the resulting strides vector to match dimension order.",
+  "Usage": "To apply this skill, create a `Tensor` object by providing a raw pointer to your flat data buffer and a `std::vector\u003cint\u003e` representing its desired multi-dimensional shape. You can then access elements using `at({dim0_idx, dim1_idx, ...})`. This pattern can be extended to support different data types (e.g., `double`, `int`), add basic arithmetic operations, or integrate with memory pool allocators for advanced memory management.",
+  "author": "anonymous"
+}
